@@ -34,7 +34,6 @@ function initSwitchBookmarks() {
     )
 }
 
-// The result from all the promises is irrelevant
 async function switchBookmarks(toolbar, replace) {
     // Move toolbar bookmarks to replacement folder
     if (toolbar.hasOwnProperty('children')) {
