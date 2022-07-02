@@ -32,9 +32,7 @@ function initSwitchBookmarks() {
 }
 
 // The result from all the promises is irrelevant
-async function switchBookmarks(toolbar, replace, msg) {
-    console.log(toolbar, replace, {msg: msg});
-
+async function switchBookmarks(toolbar, replace) {
     // Move toolbar bookmarks to replacement folder
     if (toolbar.hasOwnProperty('children')) {
         for (let i = 0; i < toolbar.children.length; i++) {
