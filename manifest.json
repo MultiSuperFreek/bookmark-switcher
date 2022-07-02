@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "version": "0.1.3",
+  "name": "Bookmark switcher",
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "browser_action": {
+    "default_icon": {
+      "16": "icons/switch-16.png",
+      "32": "icons/switch-32.png"
+    }
+  },
+  "permissions": [
+    "bookmarks"
+  ]
+}
