@@ -1,13 +1,9 @@
 const bookmarksToolbarID = 'toolbar_____';
 const bookmarksMenuID = 'menu________';
 const bookmarksReplaceTitle = 'BookmarkSwitcher';
-const bookmarksTempFolderTitle = 'BookmarkSwitcherTemp';
 
 function initSwitchBookmarks() {
-    toggle = !toggle;
-    browser.browserAction.setBadgeText({
-        text: toggle.toString()
-    });
+
     browser.bookmarks.getTree().then(
         function (bookmarksTree) {
             console.log(bookmarksTree);
@@ -28,58 +24,48 @@ function initSwitchBookmarks() {
                     parentId: bookmarksMenuID,
                     title: bookmarksReplaceTitle,
                 }).then(function (replace) {
-                    switchBookmarks(toolbar, replace, 'from new');
+                    switchBookmarks(toolbar, replace, 'from new').then(result => console.log({msg: 'Done', result: result}));
                 });
             } else {
-                switchBookmarks(toolbar, replace[0], 'from existing');
+                switchBookmarks(toolbar, replace[0], 'from existing').then(result => console.log({msg: 'Done', result: result}));
             }
         }
     )
 }
 
-function switchBookmarks(toolbar, replace, msg) {
+async function switchBookmarks(toolbar, replace, msg) {
     console.log(toolbar, replace, {msg: msg});
 
     // Move toolbar to replacement folder
-    let promises = [];
-
     if (toolbar.hasOwnProperty('children')) {
-        toolbar.children.forEach(function (child) {
+        for (let i = 0; i < toolbar.children.length; i++) {
+            let child = toolbar.children[i];
             console.log({from_toolbar: child});
-            promises.push(
-                browser.bookmarks.move(
-                    child.id,
-                    {
-                        parentId: replace.id,
-                        index: child.index,
-                    }
-                )
-            );
-        });
+            await browser.bookmarks.move(
+                child.id,
+                {
+                    parentId: replace.id,
+                    index: child.index,
+                }
+            ).then(result => result);
+        }
     }
 
     if (replace.hasOwnProperty('children')) {
-        replace.children.forEach(function (child) {
+        for (let i = 0; i < replace.children.length; i++) {
+            let child = replace.children[i];
             console.log({from_replace: child});
-            promises.push(
-                browser.bookmarks.move(
-                    child.id,
-                    {
-                        parentId: toolbar.id,
-                        index: 60,
-                    }
-                )
-            );
-        });
+            await browser.bookmarks.move(
+                child.id,
+                {
+                    parentId: toolbar.id,
+                    index: child.index,
+                }
+            ).then(result => result);
+        }
     }
 
-    Promise.all(promises).then(function (input) {
-        console.log({msg: 'Done', input: input });
-    } );
+    console.log({msg: 'End'});
 }
 
-let toggle = 1;
 browser.browserAction.onClicked.addListener(initSwitchBookmarks);
-browser.browserAction.setBadgeText({
-    text: toggle.toString()
-});
