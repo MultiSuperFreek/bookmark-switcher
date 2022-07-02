@@ -3,7 +3,10 @@ const bookmarksMenuID = 'menu________';
 const bookmarksReplaceTitle = 'BookmarkSwitcher';
 
 function initSwitchBookmarks() {
-
+    if (disabled) {
+        return;
+    }
+    disabled = true;
     browser.bookmarks.getTree().then(
         function (bookmarksTree) {
             // Get the toolbar and the menu with the replacement folder
@@ -22,10 +25,10 @@ function initSwitchBookmarks() {
                     parentId: bookmarksMenuID,
                     title: bookmarksReplaceTitle,
                 }).then(function (replace) {
-                    switchBookmarks(toolbar, replace);
+                    switchBookmarks(toolbar, replace).then(function () { disabled = false; });
                 });
             } else {
-                switchBookmarks(toolbar, replace[0]);
+                switchBookmarks(toolbar, replace[0]).then(function () { disabled = false; });
             }
         }
     )
@@ -62,4 +65,5 @@ async function switchBookmarks(toolbar, replace) {
     }
 }
 
+let disabled = false;
 browser.browserAction.onClicked.addListener(initSwitchBookmarks);
