@@ -39,60 +39,43 @@ function initSwitchBookmarks() {
 
 function switchBookmarks(toolbar, replace, msg) {
     console.log(toolbar, replace, {msg: msg});
-    browser.bookmarks.create({
-        title: bookmarksTempFolderTitle,
-    }).then(function (temp) {
-        // Move toolbar to temp folder
-        let promises = [];
+
+    // Move toolbar to replacement folder
+    let promises = [];
+
+    if (toolbar.hasOwnProperty('children')) {
         toolbar.children.forEach(function (child) {
-            console.log(child);
+            console.log({from_toolbar: child});
             promises.push(
                 browser.bookmarks.move(
                     child.id,
                     {
-                        parentId: temp.id,
+                        parentId: replace.id,
                         index: child.index,
                     }
                 )
             );
         });
-        Promise.all(promises).then(function () {
-            // Move replacement to toolbar
-            let promises = [];
-            replace.children.forEach(function (child) {
-                console.log(child);
-                promises.push(
-                    browser.bookmarks.move(
-                        child.id,
-                        {
-                            parentId: toolbar.id,
-                            index: child.index,
-                        }
-                    )
-                );
-            });
-            Promise.all(promises).then(function () {
-                // Move temp folder to replacement
-                let promises = [];
-                temp.children.forEach(function (child) {
-                    console.log(child);
-                    promises.push(
-                        browser.bookmarks.move(
-                            child.id,
-                            {
-                                parentId: replace.id,
-                                index: child.index,
-                            }
-                        )
-                    );
-                });
-                Promise.all(promises).then(function () {
-                    // Cleanup
+    }
 
-                } )
-            } )
-        } )
-    });
+    if (replace.hasOwnProperty('children')) {
+        replace.children.forEach(function (child) {
+            console.log({from_replace: child});
+            promises.push(
+                browser.bookmarks.move(
+                    child.id,
+                    {
+                        parentId: toolbar.id,
+                        index: 60,
+                    }
+                )
+            );
+        });
+    }
+
+    Promise.all(promises).then(function (input) {
+        console.log({msg: 'Done', input: input });
+    } );
 }
 
 let toggle = 1;
